@@ -173,7 +173,7 @@ function waffles(session) {
       return;
     }
 
-    var match = /^(вафельки)(?:\s(\d))?$/.exec(session.message.text);
+    var match = /^(?:@ApelKunBot\s)?(вафельки)(?:\s(\d))?$/.exec(session.message.text);
 
     if (!match) {
       resolve(null);
