@@ -17,7 +17,7 @@ var connector = new builder.ChatConnector({
 });
 
 // Listen for messages from users
-server.get('/api/messages', connector.listen());
+server.post('/api/messages', connector.listen());
 
 server.get(/.*/, restify.plugins.serveStatic({
 	'directory': '.',
