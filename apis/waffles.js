@@ -44,7 +44,6 @@ var repos = [
 ];
 
 var DAYS;
-var gitlabAT = 'qYhG1gXw1K2Su7Dsf4kp';
 
 function correctDaysEnding(days) {
   switch (days) {
@@ -85,7 +84,7 @@ function handleGitlabRepo (repo) {
       url: gitlabApiUrl + `/projects/${projectId}/repository/commits?per_page=1`,
       headers: {
         'User-Agent': 'request',
-        'PRIVATE-TOKEN': gitlabAT
+        'PRIVATE-TOKEN': process.env.GITLAB_TOKEN
       }
     };
     request(requestOptions, function (error, response, body) {
