@@ -24,7 +24,20 @@ server.get(/.*/, restify.plugins.serveStatic({
 	'default': 'index.html'
 }));
 
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 // Receive messages from the user and respond by echoing each message back (prefixed with 'You said:')
 var bot = new builder.UniversalBot(connector, function (session) {
-    session.send("You said: %s", session.message.text);
+  var names = ['рома'];
+  var messageText = session.message.text;
+
+  names.some(function(name) {
+    if (messageText.indexOf(name) > -1) {
+      session.send("Кто тебе сказал, сука, что это имя так пишется? Правильно писать: %s", capitalizeFirstLetter(name));
+      return true;
+    }
+  });
+
 });
