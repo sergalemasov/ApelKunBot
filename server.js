@@ -19,12 +19,7 @@ var connector = new builder.ChatConnector({
 // Listen for messages from users
 server.post('/api/messages', connector.listen());
 
-server.get('/api/messages', restify.serveStatic({
-	'directory': '.',
-	'default': 'index.html'
-}));
-
-server.get(/.*/, restify.serveStatic({
+server.get(/.*/, restify.plugins.serveStatic({
 	'directory': '.',
 	'default': 'index.html'
 }));
