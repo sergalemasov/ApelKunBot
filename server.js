@@ -1,5 +1,7 @@
 var restify = require('restify');
 var builder = require('botbuilder');
+var names = require('./apis/names');
+var waffles = require('./apis/waffles');
 
 // Setup Restify Server
 var server = restify.createServer();
@@ -9,8 +11,8 @@ server.listen(process.env.port || process.env.PORT || 3978, function () {
 
 // Create chat connector for communicating with the Bot Framework Service
 var connector = new builder.ChatConnector({
-    appId: process.env.MICROSOFT_APP_ID,
-    appPassword: process.env.MICROSOFT_APP_PASSWORD
+    appId: process.env.MICROSOFT_APP_ID || '38d7eda8-a3a8-4cc4-96aa-2c6392ff0b17',
+    appPassword: process.env.MICROSOFT_APP_PASSWORD || 'r8ugUzyLjn5tuN3FzziGbbY'
 });
 
 // Listen for messages from users
@@ -21,23 +23,11 @@ server.get(/.*/, restify.plugins.serveStatic({
 	'default': 'index.html'
 }));
 
-function capitalizeFirstLetter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-// Receive messages from the user and respond by echoing each message back (prefixed with 'You said:')
 var bot = new builder.UniversalBot(connector, function (session) {
-  var names = [
-    'рома',
-    'стас'
-  ];
-  var messageText = session.message.text;
-
-  names.some(function(name) {
-    if (messageText.indexOf(name) > -1) {
-      session.send("Кто тебе сказал, сука, что это имя так пишется? Правильно писать: %s", capitalizeFirstLetter(name));
-      return true;
-    }
-  });
-
+  waffles(session)
+    .then(function (message) {
+      if (message) {
+        session.send(message);
+      }
+    });
 });
