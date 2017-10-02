@@ -127,10 +127,6 @@ function handleGithubRepo (repo) {
     };
 
     request(requestOptions, function (error, response, body) {
-      // console.log('error:', error); // Print the error if one occurred
-      // console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
-      // console.log('body:', body); // Print the HTML for the Google homepage.
-
       if (response && response.statusCode !== 200) {
         handleHttpError(reject, repo.name, response.statusCode);
         return;
@@ -186,21 +182,27 @@ function waffles(session) {
     }
 
     var days = match[2] !== undefined && parseInt(match[2]);
-    DAYS = days && days < 8 && days > 0 || 5;
+    DAYS = (days && days < 8 && days > 0) ? days : 5;
 
     Promise.all(repos.map(handleRepo))
       .then(function (criminals) {
         var message = `В течение ${DAYS} ${correctDaysEnding(DAYS)} `;
         if ( !criminals.some(function (e) {return e}) ) {
-          resolve( message + 'все чето делали :(' );
+          resolve( message + 'все чето делали, вафли нипаедим :(' );
         } else {
-          resolve( message + criminals.filter(function (e) {return e}) );
+          criminals = criminals.filter(function (e) {return e});
+          var ending = criminals.length > 1 ? 'и' : '';
+          var ending2 = criminals.length > 1 ? 'ат' : 'ит';
+
+          resolve(`${message} ${criminals.join(', ')} нихера не делал${ending}, посему пусть тащ${ending2} вафли черт побери!`);
         }
       })
       .catch(function (err) {
         resolve(err);
       });
   });
+
+  return promise;
 }
 
 //waffles();
