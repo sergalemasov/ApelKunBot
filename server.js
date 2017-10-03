@@ -2,6 +2,7 @@ var restify = require('restify');
 var builder = require('botbuilder');
 var names = require('./apis/names');
 var waffles = require('./apis/waffles');
+var announcement = require('./apis/announcement');
 
 // Setup Restify Server
 var server = restify.createServer();
@@ -30,4 +31,6 @@ var bot = new builder.UniversalBot(connector, function (session) {
         session.send(message);
       }
     });
+
+  announcement(session);
 });
