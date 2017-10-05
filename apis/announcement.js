@@ -1,4 +1,5 @@
 const request = require('request');
+const authorization = require('./authorization');
 
 const dataUrl = 'https://ng2-app.firebaseio.com/announcement.json';
 const MESSAGES = {
@@ -21,6 +22,7 @@ function start(session) {
     const data = JSON.parse(body);
 
     if (data && data.text && data.interval) {
+      session.send(data.text);
       interval = setInterval(() => {
         session.send(data.text);
       }, data.interval);
@@ -50,7 +52,10 @@ function announcement(session) {
     return;
   }
 
-  isAnnouncementStart ? start(session) : stop();
+  authorization(session)
+    .then(()=>{
+      isAnnouncementStart ? start(session) : stop();
+    });
 }
 
 module.exports = announcement;
