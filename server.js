@@ -1,6 +1,7 @@
 var restify = require('restify');
 var builder = require('botbuilder');
 var names = require('./apis/names');
+var random = require('./apis/random');
 var waffles = require('./apis/waffles');
 var announcement = require('./apis/announcement');
 
