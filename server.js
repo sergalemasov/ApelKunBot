@@ -32,6 +32,6 @@ var bot = new builder.UniversalBot(connector, function (session) {
         session.send(message);
       }
     });
-
+  random(session);
   announcement(session);
 });
