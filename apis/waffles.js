@@ -32,7 +32,7 @@ var repos = [
   {
     name: 'Виктор',
     owner: 'viktorvavilov',
-    repo: 'Angular2Mentoring',
+    repo: 'angular2ment',
     repoType: repoTypes.HUB
   },
   {
