@@ -17,8 +17,8 @@ function authorization(session) {
       return;
     }
 
-    if (session.message && session.message && session.message.user && session.message.user.id) {
-      const fromId = session.message.user.id;
+    if (session.message && session.message && session.message.user && session.message.user.name) {
+      const fromName = session.message.user.fromName;
 
       request({
         url: dataUrl
@@ -31,7 +31,7 @@ function authorization(session) {
         const data = JSON.parse(body);
     
         if (data && data.length) {
-          if (data.indexOf(fromId) > -1) {
+          if (data.indexOf(fromName) > -1) {
             resolve();
             return;
           } else {
