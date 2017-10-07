@@ -1,5 +1,5 @@
-const request = require('request');
-const authorization = require('./authorization');
+import request = require('request');
+import authorization from './authorization';
 
 const dataUrl = 'https://ng2-app.firebaseio.com/announcement.json';
 const MESSAGES = {
@@ -58,4 +58,4 @@ function announcement(session) {
     });
 }
 
-module.exports = announcement;
+export default announcement;

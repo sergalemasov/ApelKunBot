@@ -27,9 +27,9 @@ function authorization(session) {
           handleError(session, MESSAGES.ERROR);
           return;
         }
-    
+
         const data = JSON.parse(body);
-        
+
         if (data && data.list && data.list.length) {
           if (data.list.indexOf(fromName) > -1) {
             resolve();
@@ -50,4 +50,4 @@ function authorization(session) {
   });
 }
 
-module.exports = authorization;
+export default authorization;

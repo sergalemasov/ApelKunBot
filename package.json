@@ -2,13 +2,19 @@
   "name": "skypebot",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
-  "author": "",
+  "scripts": {
+    "start": "tsc && node dist/server.js"
+  },
+  "author": "ApelKun and Co",
   "license": "ISC",
   "dependencies": {
+    "@types/node": "8.0.33",
+    "@types/request": "^2.0.4",
+    "@types/restify": "5.0.5",
     "botbuilder": "3.10.2",
     "petrovich": "0.2.1",
     "request": "2.83.0",
-    "restify": "6.0.1"
+    "restify": "6.0.1",
+    "typescript": "2.5.3"
   }
 }

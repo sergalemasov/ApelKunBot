@@ -41,4 +41,4 @@ function random(session) {
 
 }
 
-module.exports = random;
+export default random;

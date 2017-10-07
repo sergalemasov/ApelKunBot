@@ -1,5 +1,5 @@
 
-var request = require('request');
+import request = require('request');
 var petrovich = require('petrovich');
 
 var guthubApiUrl = 'https://api.github.com';
@@ -186,7 +186,7 @@ function waffles(session) {
     Promise.all(repos.map(handleRepo))
       .then(function (criminals) {
         var message = `В течение ${DAYS} ${correctDaysEnding(DAYS)} `;
-        if ( !criminals.some(function (e) {return e}) ) {
+        if ( !criminals.some(function (criminal: string) {return !!criminal}) ) {
           resolve( message + 'все чето делали, вафли нипаедим :(' );
         } else {
           criminals = criminals.filter(function (e) {return e});
@@ -206,4 +206,4 @@ function waffles(session) {
 
 //waffles();
 
-module.exports = waffles;
+export default waffles;

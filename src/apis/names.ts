@@ -1,4 +1,4 @@
-var capitalizeFirstLetter = require('../utils/helpers').capitalizeFirstLetter;
+import { capitalizeFirstLetter } from '../utils/helpers';
 
 function names(session) {
   var names = [
@@ -17,4 +17,4 @@ function names(session) {
   return message;
 }
 
-module.exports = names;
+export default names;
