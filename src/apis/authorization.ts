@@ -1,4 +1,4 @@
-const request = require('request');
+import request = require('request');
 
 const dataUrl = 'https://ng2-app.firebaseio.com/authorization.json';
 const MESSAGES = {
