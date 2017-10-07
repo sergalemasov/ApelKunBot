@@ -12,7 +12,9 @@ import {
 
 import waffles from './apis/waffles';
 import random from './apis/random';
-import announcement from './apis/announcement';
+import Announcement from './apis/announcement';
+
+const announcement: Announcement = new Announcement();
 
 // Setup Restify Server
 const server: Server = createServer();
@@ -43,5 +45,5 @@ const bot: UniversalBot = new UniversalBot(connector, (session: Session) => {
       }
     });
   random(session);
-  announcement(session);
+  announcement.handleMessage(session);
 });

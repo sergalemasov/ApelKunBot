@@ -1,61 +1,107 @@
 import request = require('request');
+import _ = require('lodash');
 import authorization from './authorization';
 
-const dataUrl = 'https://ng2-app.firebaseio.com/announcement.json';
-const MESSAGES = {
-  ERROR: 'Ошибка :('
+import { Session } from 'botbuilder';
+
+type MESSAGES = {
+  ERROR: string,
+  SUCCESS_STOP: string,
+  SUCCESS_STOP_NAMED: string
 }
 
-let interval;
+type AnnouncementData = {
+  text: string,
+  interval: number  
+}
 
-function start(session) {
-  stop();
+//TODO move to separate file and encapsulate common logic/handlers here if it will take root
+abstract class MessageHandler {
+  abstract handleMessage(session: Session): void;
+}
 
-  request({
-    url: dataUrl
-  }, function (error, response, body) {
-    if (error || (response && response.statusCode !== 200)) {
-      handleError(session);
+class Announcement extends MessageHandler {
+  static readonly dataUrl: string = 'https://ng2-app.firebaseio.com/announcement.json';
+  static readonly MESSAGES: MESSAGES = {
+    ERROR: 'Ошибка :(',
+    SUCCESS_STOP: 'Успешно остановлено!',
+    SUCCESS_STOP_NAMED: 'Успешно остановлено, <%=username%>!'
+  };
+
+  private interval: NodeJS.Timer;
+  private session: Session;
+  private name: string;
+
+  private start(): void {
+    this.stop(true);
+    
+    request({
+      url: Announcement.dataUrl
+    }, this.onRequestEnd.bind(this));
+  }
+
+  private stop(isOnStart?: boolean): void {
+    clearInterval(this.interval);
+
+    if (isOnStart) {
       return;
     }
 
-    const data = JSON.parse(body);
+    const message: string = this.name ? 
+      _.template(Announcement.MESSAGES.SUCCESS_STOP_NAMED)({username: this.name}) : 
+      Announcement.MESSAGES.SUCCESS_STOP;
+
+    this.send(message);
+  }
+
+  private onRequestEnd(error: Error, response: request.RequestResponse, body: string): void {
+    if (error || (response && response.statusCode !== 200)) {
+      this.send(Announcement.MESSAGES.ERROR);
+      return;
+    }
+
+    const data: AnnouncementData = JSON.parse(body);
 
     if (data && data.text && data.interval) {
-      session.send(data.text);
-      interval = setInterval(() => {
-        session.send(data.text);
+      this.send(data.text);
+      
+      this.interval = setInterval(() => {
+        this.send(data.text);
       }, data.interval);
     } else {
-      handleError(session);
+      this.send(Announcement.MESSAGES.ERROR);
     }
-  });
-}
-
-function stop() {
-  clearInterval(interval);
-}
-
-function handleError(session) {
-  session.send(MESSAGES.ERROR);
-}
-
-function announcement(session) {
-  if (!session) {
-    return;
   }
 
-  let isAnnouncementStart = /^(?:@ApelKunBot\s)?(announcement)(?:\s(\d))?$/.exec(session.message.text);
-  let isAnnouncementEnd = /^(?:@ApelKunBot\s)?(stop)(?:\s(\d))?$/.exec(session.message.text);
-
-  if (!isAnnouncementStart && !isAnnouncementEnd) {
-    return;
+  private send(message: string): void {
+    this.session.send(message);
   }
 
-  authorization(session)
-    .then(()=>{
-      isAnnouncementStart ? start(session) : stop();
-    });
+  public handleMessage(session: Session) {
+    if (!session) {
+      return;
+    }
+
+    this.session = session;
+
+    const isAnnouncementStart: RegExpExecArray = /^(?:@ApelKunBot\s)?(announcement)(?:\s(\d))?$/.exec(session.message.text);
+    const isAnnouncementEnd: RegExpExecArray = /^(?:@ApelKunBot\s)?(stop)(?:\s(\d))?$/.exec(session.message.text);
+    
+    if (!isAnnouncementStart && !isAnnouncementEnd) {
+      return;
+    }
+
+    authorization(this.session)
+      .then((name: string) => {
+        if (name) {
+          this.name = name;
+        }
+
+        isAnnouncementStart ? 
+          this.start() : 
+          this.stop();
+      });
+  }
 }
 
-export default announcement;
+export default Announcement;

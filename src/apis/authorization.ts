@@ -1,13 +1,16 @@
 import request = require('request');
+import _ = require('lodash');
 
 const dataUrl = 'https://ng2-app.firebaseio.com/authorization.json';
 const MESSAGES = {
   ERROR: 'Ошибка :(',
-  UNAUTH: 'Ты кто такой?'
+  UNAUTH: 'Ты кто такой, <%=username%>?'
 }
 
-function handleError(session, error) {
-  session.send(error);
+function handleError(session, error, name?) {
+  name ?
+    session.send(_.template(error)({username: name})) :
+    session.send(error);
 }
 
 function authorization(session) {
@@ -32,10 +35,10 @@ function authorization(session) {
 
         if (data && data.list && data.list.length) {
           if (data.list.indexOf(fromName) > -1) {
-            resolve();
+            resolve(fromName);
             return;
           } else {
-            handleError(session, MESSAGES.UNAUTH);
+            handleError(session, MESSAGES.UNAUTH, fromName);
             return;
           }
         } else {
