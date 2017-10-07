@@ -12,9 +12,10 @@ server.listen(process.env.port || process.env.PORT || 3978, function () {
 });
 
 // Create chat connector for communicating with the Bot Framework Service
+// ID and PASSWORD have been moved to heroku config variables
 var connector = new builder.ChatConnector({
-    appId: process.env.MICROSOFT_APP_ID || '38d7eda8-a3a8-4cc4-96aa-2c6392ff0b17',
-    appPassword: process.env.MICROSOFT_APP_PASSWORD || 'r8ugUzyLjn5tuN3FzziGbbY'
+    appId: process.env.MICROSOFT_APP_ID,
+    appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
 
 // Listen for messages from users
