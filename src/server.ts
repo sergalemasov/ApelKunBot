@@ -6,14 +6,13 @@ import {
 
 import {
   UniversalBot,
-  ChatConnector
+  ChatConnector,
+  Session
 } from 'botbuilder';
-// var names = require('./apis/names.ts');
-// var random = require('./apis/random.ts');
+
 import waffles from './apis/waffles';
 import random from './apis/random';
 import announcement from './apis/announcement';
-// var announcement = require('./apis/announcement.ts');
 
 // Setup Restify Server
 const server: Server = createServer();
@@ -36,9 +35,9 @@ server.get(/.*/, restifyPlugins.serveStatic({
 	'default': '../index.html'
 }));
 
-var bot = new UniversalBot(connector, function (session) {
+const bot = new UniversalBot(connector, (session: Session) => {
   waffles(session)
-    .then(function (message: string) {
+    .then((message: string) => {
       if (message) {
         session.send(message);
       }

@@ -1,16 +1,28 @@
 
 import request = require('request');
-var petrovich = require('petrovich');
+import { Session } from 'botbuilder';
+const petrovich: any = require('petrovich');
 
-var guthubApiUrl = 'https://api.github.com';
-var gitlabApiUrl = 'https://git.epam.com/api/v3';
+const guthubApiUrl: string = 'https://api.github.com';
+const gitlabApiUrl: string = 'https://git.epam.com/api/v3';
 
-var repoTypes = {
-  HUB: 1,
-  LAB: 2
+type Repo = {
+  name: string;
+  owner: string;
+  repo: string;
+  repoType: repoTypes
 };
 
-var repos = [
+type Reject = (reason?: any) => void;
+type ResolveString = (value?: string | PromiseLike<string>) => void;
+type ResolveStringNull = (value?: string | null | PromiseLike<string|null>) => void;
+
+enum repoTypes {
+  HUB,
+  LAB
+};
+
+const repos: Repo[] = [
   {
     name: 'Рамиль',
     owner: 'baltachevramil',
@@ -43,9 +55,9 @@ var repos = [
   }
 ];
 
-var DAYS;
+let DAYS: number;
 
-function correctDaysEnding(days) {
+function correctDaysEnding(days: number): string {
   switch (days) {
     case 1:
       return 'дня';
@@ -59,53 +71,55 @@ function correctDaysEnding(days) {
   }
 }
 
-function isLate(commitMsec, days) {
-  var deltaMsec = days * 24 * 60 * 60 * 1000;
-  var nowMsec = Date.now();
+function isLate(commitMsec: number, days: number): boolean {
+  const deltaMsec: number = days * 24 * 60 * 60 * 1000;
+  const nowMsec: number = Date.now();
 
   return (commitMsec + deltaMsec) < nowMsec;
 }
 
-function handleHttpError(reject, name, code) {
-  var message = `Сорян, не смог вытянуть репозиторий у ${petrovich.male.first.genitive(name, 'genitive')} код ошибки: ${code}. Поэтому вафли торчит он!`;
+function handleHttpError(reject: Reject, name: string, code: number): void {
+  const message: string = `Сорян, не смог вытянуть репозиторий у ${petrovich.male.first.genitive(name, 'genitive')} код ошибки: ${code}. Поэтому вафли торчит он!`;
   reject(message);
 }
 
-function handleParseDateError(reject, name) {
-  var message = `Не смог вытянуть коммит/дату у ${petrovich.male.first.genitive(name, 'genitive')}. Поэтому вафли торчит он!`;
+function handleParseDateError(reject: Reject, name: string): void {
+  const message: string = `Не смог вытянуть коммит/дату у ${petrovich.male.first.genitive(name, 'genitive')}. Поэтому вафли торчит он!`;
   reject(message);
 }
 
-function handleGitlabRepo (repo) {
-  var promise = new Promise(function(resolve, reject) {
-    var projectId = encodeURIComponent(`${repo.owner}/${repo.repo}`);
+function handleGitlabRepo (repo: Repo): Promise<string> {
+  const promise: Promise<string> = new Promise((resolve: ResolveString, reject: Reject) => {
+    const projectId: string = encodeURIComponent(`${repo.owner}/${repo.repo}`);
 
-    var requestOptions = {
+    const requestOptions: request.OptionsWithUrl = {
       url: gitlabApiUrl + `/projects/${projectId}/repository/commits?per_page=1`,
       headers: {
         'User-Agent': 'request',
         'PRIVATE-TOKEN': process.env.GITLAB_TOKEN
       }
     };
-    request(requestOptions, function (error, response, body) {
+    request(requestOptions, function (error: any, response: request.RequestResponse, body: any) {
       if (response && response.statusCode !== 200) {
         handleHttpError(reject, repo.name, response.statusCode);
         return;
       }
 
-      var parsedResponse = JSON.parse(body);
-      var dateString = (
+      // TODO: describe DTO
+      const parsedResponse: any = JSON.parse(body);
+
+      const dateString: string = (
         parsedResponse &&
         parsedResponse.length &&
         parsedResponse[0].committed_date
-      ) || undefined;
+      ) || '';
 
       if (!dateString) {
         handleParseDateError(reject, repo.name);
         return;
       }
 
-      var commitMsec = Date.parse(dateString);
+      const commitMsec: number = Date.parse(dateString);
       if (isLate(commitMsec, DAYS)) {
         resolve(repo.name);
       } else {
@@ -116,36 +130,37 @@ function handleGitlabRepo (repo) {
   return promise;
 }
 
-function handleGithubRepo (repo) {
-  var promise = new Promise(function(resolve, reject) {
-    var requestOptions = {
+function handleGithubRepo (repo: Repo): Promise<string> {
+  const promise: Promise<string> = new Promise((resolve: ResolveString, reject: Reject) => {
+    const requestOptions: request.OptionsWithUrl = {
       url: guthubApiUrl + `/repos/${repo.owner}/${repo.repo}/commits?per_page=1`,
       headers: {
         'User-Agent': 'request'
       }
     };
 
-    request(requestOptions, function (error, response, body) {
+    request(requestOptions, function (error: any, response: request.RequestResponse, body: any) {
       if (response && response.statusCode !== 200) {
         handleHttpError(reject, repo.name, response.statusCode);
         return;
       }
 
-      var parsedResponse = JSON.parse(body);
-      var dateString = (
+      // TODO: describe DTO
+      const parsedResponse: any = JSON.parse(body);
+      const dateString: string = (
         parsedResponse &&
         parsedResponse.length &&
         parsedResponse[0].commit &&
         parsedResponse[0].commit.committer &&
         parsedResponse[0].commit.committer.date
-      ) || undefined;
+      ) || '';
 
       if (!dateString) {
         handleParseDateError(reject, repo.name);
         return;
       }
 
-      var commitMsec = Date.parse(dateString) + 3600000 * 4;   // adding GMT
+      const commitMsec: number = Date.parse(dateString) + 3600000 * 4;   // adding GMT
       if (isLate(commitMsec, DAYS)) {
         resolve(repo.name);
       } else {
@@ -156,7 +171,7 @@ function handleGithubRepo (repo) {
   return promise;
 }
 
-function handleRepo(repo) {
+function handleRepo(repo: Repo): Promise<string> {
   switch (repo.repoType) {
     case repoTypes.HUB:
       return handleGithubRepo(repo);
@@ -165,38 +180,38 @@ function handleRepo(repo) {
   }
 }
 
-function waffles(session) {
-
-  var promise = new Promise(function (resolve) {
+function waffles(session: Session): Promise<string|null> {
+  const promise: Promise<string|null> = new Promise(function (resolve: ResolveStringNull) {
     if (!session) {
       resolve(null);
       return;
     }
 
-    var match = /^(?:@ApelKunBot\s)?(вафельки)(?:\s(\d))?$/.exec(session.message.text);
+    const match: RegExpExecArray = /^(?:@ApelKunBot\s)?(вафельки)(?:\s(\d))?$/.exec(session.message.text);
 
     if (!match) {
       resolve(null);
       return;
     }
 
-    var days = match[2] !== undefined && parseInt(match[2]);
+    const days: number = match[2] !== undefined && parseInt(match[2]);
     DAYS = (days && days < 8 && days > 0) ? days : 5;
 
     Promise.all(repos.map(handleRepo))
-      .then(function (criminals) {
-        var message = `В течение ${DAYS} ${correctDaysEnding(DAYS)} `;
-        if ( !criminals.some(function (criminal: string) {return !!criminal}) ) {
+      .then((criminals: string[]) => {
+        const message: string = `В течение ${DAYS} ${correctDaysEnding(DAYS)} `;
+
+        if ( !criminals.some((criminal: string): boolean => !!criminal) ) {
           resolve( message + 'все чето делали, вафли нипаедим :(' );
         } else {
-          criminals = criminals.filter(function (e) {return e});
-          var ending = criminals.length > 1 ? 'и' : '';
-          var ending2 = criminals.length > 1 ? 'ат' : 'ит';
+          criminals = criminals.filter((criminal: string): boolean => !!criminal);
+          const ending: string = criminals.length > 1 ? 'и' : '';
+          const ending2: string = criminals.length > 1 ? 'ат' : 'ит';
 
           resolve(`${message} ${criminals.join(', ')} нихера не делал${ending}, посему пусть тащ${ending2} вафли черт побери!`);
         }
       })
-      .catch(function (err) {
+      .catch((err: string) => {
         resolve(err);
       });
   });
