@@ -35,7 +35,7 @@ server.get(/.*/, restifyPlugins.serveStatic({
 	'default': '../index.html'
 }));
 
-const bot = new UniversalBot(connector, (session: Session) => {
+const bot: UniversalBot = new UniversalBot(connector, (session: Session) => {
   waffles(session)
     .then((message: string) => {
       if (message) {
