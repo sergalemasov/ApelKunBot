@@ -28,7 +28,7 @@ function random(session) {
 
   var matchMentors = /^(?:@ApelKunBot\s)?(who\? leads)?$/.exec(session.message.text);
   var matchMentees = /^(?:@ApelKunBot\s)?(who\? devs)?$/.exec(session.message.text);
-  var matchAllDevs = /^(?:@ApelKunBot\s)?(who\? all)?$/.exec(session.message.text);
+  var matchAll = /^(?:@ApelKunBot\s)?(who\? all)?$/.exec(session.message.text);
 
   if (matchMentors) {
     session.send('Bot has chosen ' + mentors[Math.floor(Math.random() * mentors.length)] + '. You now you should fulfill Roman\'s desire');

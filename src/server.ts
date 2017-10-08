@@ -10,11 +10,14 @@ import {
   Session
 } from 'botbuilder';
 
-import waffles from './apis/waffles';
+import Waffles from './apis/waffles';
+import GitObserver from './apis/git-observer';
 import random from './apis/random';
 import Announcement from './apis/announcement';
 
 const announcement: Announcement = new Announcement();
+const gitObserver: GitObserver = new GitObserver();
+const waffles: Waffles = new Waffles(gitObserver);
 
 // Setup Restify Server
 const server: Server = createServer();
@@ -38,12 +41,7 @@ server.get(/.*/, restifyPlugins.serveStatic({
 }));
 
 const bot: UniversalBot = new UniversalBot(connector, (session: Session) => {
-  waffles(session)
-    .then((message: string) => {
-      if (message) {
-        session.send(message);
-      }
-    });
+  waffles.handleMessage(session);
   random(session);
   announcement.handleMessage(session);
 });
