@@ -10,7 +10,7 @@ export default abstract class MessageHandler {
   public handleMessage(session: Session) {
     this.stripBotName(session);
 
-    this.respond(session)
+    this.handleBotMessage(session)
       .then(response => {
         if (response) {
           session.send(response);
@@ -22,5 +22,5 @@ export default abstract class MessageHandler {
     session.message.text = session.message.text.replace(this.botNameRegex, '$1');
   }
 
-  protected abstract respond(session: Session): Promise<string|null>
+  protected abstract handleBotMessage(session: Session): Promise<string|null>
 }

@@ -9,7 +9,7 @@ export default class Waffles extends MessageHandler {
     super();
   }
 
-  protected respond(session: Session): Promise<string> {
+  protected handleBotMessage(session: Session): Promise<string> {
     return new Promise((resolve, reject) => {
       const match = /^вафельки(?:\s(\d))?$/.exec(session.message.text);
       if (!match) {
