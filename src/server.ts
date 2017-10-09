@@ -16,12 +16,14 @@ import random from './apis/random';
 import DaVed from './apis/da-ved';
 import GoodBoy from './apis/good-boy';
 import Announcement from './apis/announcement';
+import Nani from './apis/nani';
 
 const announcement: Announcement = new Announcement();
 const gitObserver: GitObserver = new GitObserver();
 const waffles: Waffles = new Waffles(gitObserver);
 const daVed: DaVed = new DaVed();
 const goodBoy: GoodBoy = new GoodBoy();
+const nani: Nani = new Nani();
 
 // Setup Restify Server
 const server: Server = createServer();
@@ -50,4 +52,5 @@ const bot: UniversalBot = new UniversalBot(connector, (session: Session) => {
   announcement.handleMessage(session);
   daVed.handleMessage(session);
   goodBoy.handleMessage(session);
+  nani.handleMessage(session);
 });
