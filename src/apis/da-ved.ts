@@ -10,7 +10,7 @@ export default class DaVed extends MessageHandler {
         return;
       }
 
-      resolve('да, дружище, я абсолютно с тобой согласен!');
+      resolve(`да, ${session.message.user.name}, я абсолютно с тобой согласен!`);
     });
   }
 }
