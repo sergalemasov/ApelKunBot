@@ -23,7 +23,7 @@ export default class Nani extends MessageHandler {
           resolve('Omae wa mou shindeiru!');
           return;
         }
-        const contentType = 'audio/mp3';
+        const contentType = 'audio/mpeg';
         const base64 = Buffer.from(data).toString('base64');
 
         resolve(
