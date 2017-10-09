@@ -1,4 +1,4 @@
-import { Session } from 'botbuilder';
+import { Session, Message } from 'botbuilder';
 
 export default abstract class MessageHandler {
   private botNameRegex: RegExp;
@@ -22,5 +22,5 @@ export default abstract class MessageHandler {
     session.message.text = session.message.text.replace(this.botNameRegex, '$1');
   }
 
-  protected abstract handleBotMessage(session: Session): Promise<string|null>
+  protected abstract handleBotMessage(session: Session): Promise<Message|string>
 }
