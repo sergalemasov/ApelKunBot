@@ -13,11 +13,13 @@ import {
 import Waffles from './apis/waffles';
 import GitObserver from './apis/git-observer';
 import random from './apis/random';
+import DaVed from './apis/da-ved';
 import Announcement from './apis/announcement';
 
 const announcement: Announcement = new Announcement();
 const gitObserver: GitObserver = new GitObserver();
 const waffles: Waffles = new Waffles(gitObserver);
+const daVed: DaVed = new DaVed();
 
 // Setup Restify Server
 const server: Server = createServer();
@@ -44,4 +46,5 @@ const bot: UniversalBot = new UniversalBot(connector, (session: Session) => {
   waffles.handleMessage(session);
   random(session);
   announcement.handleMessage(session);
+  daVed.handleMessage(session);
 });
