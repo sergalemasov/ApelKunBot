@@ -18,7 +18,7 @@ export default class GoodBoy extends MessageHandler {
 
   private readGoodBoy(session: Session): Promise<string|Message> {
     return new Promise((resolve, reject) => {
-      fs.readFile(path.join(__dirname, '../assets/img/good_boy.jpg'), function(err, data) {
+      fs.readFile(path.join(__dirname, '../assets/img/good_boy.png'), function(err, data) {
         if (err) {
           resolve('I am not a good boy!');
           return;
