@@ -18,7 +18,7 @@ export default abstract class MessageHandler {
       });
   }
 
-  private stripBotName(session: Session): void {
+  public stripBotName(session: Session): void {
     session.message.text = session.message.text.replace(this.botNameRegex, '$1');
   }
 
