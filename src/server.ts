@@ -19,6 +19,7 @@ import Announcement from './apis/announcement';
 import Nani from './apis/nani';
 import Vote from './apis/vote';
 import Votex from './apis/votex';
+import HttpActionTest from './apis/http-action-test';
 
 const announcement: Announcement = new Announcement();
 const gitObserver: GitObserver = new GitObserver();
@@ -28,6 +29,7 @@ const goodBoy: GoodBoy = new GoodBoy();
 const nani: Nani = new Nani();
 const vote: Vote = new Vote();
 const votex: Votex = new Votex();
+const httpActionTest: HttpActionTest = new HttpActionTest();
 
 // Setup Restify Server
 const server: Server = createServer();
@@ -59,6 +61,7 @@ const bot: UniversalBot = new UniversalBot(connector, (session: Session) => {
   nani.handleMessage(session);
   vote.handleMessage(session);
   votex.handleMessage(session);
+  httpActionTest.handleMessage(session);
 });
 
 vote.setCustomActions(bot);
