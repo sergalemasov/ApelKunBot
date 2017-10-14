@@ -20,6 +20,7 @@ import Nani from './apis/nani';
 import Vote from './apis/vote';
 import Votex from './apis/votex';
 import HttpActionTest from './apis/http-action-test';
+import httpEndpointTest from './request-handlers/http-endpoint-test';
 
 const announcement: Announcement = new Announcement();
 const gitObserver: GitObserver = new GitObserver();
@@ -46,6 +47,8 @@ const connector: ChatConnector = new ChatConnector({
 
 // Listen for messages from users
 server.post('/api/messages', connector.listen());
+
+server.get('/session/:sessionId', httpEndpointTest);
 
 server.get(/.*/, restifyPlugins.serveStatic({
 	'directory': '.',
