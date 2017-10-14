@@ -26,11 +26,11 @@ export default class HttpActionTest extends MessageHandler {
     const msg: Message = new Message(session)
       .attachments([
         new HeroCard(session)
-          .title("Classic Gray T-Shirt")
-          .subtitle("100% Soft and Luxurious Cotton")
-          .text("Price is $25 and carried in sizes (S, M, L, and XL)")
+          .title('Open url')
+          .subtitle('работает')
+          .text('как залупа')
           .buttons([
-            CardAction.openUrl(session, `${process.env.APP_URL}session/${sessionId}`)
+            CardAction.openUrl(session, `${process.env.APP_URL}session/${sessionId}`, 'потомучто открывает браузер')
           ])
       ]);
     return msg;
