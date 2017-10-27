@@ -92,7 +92,7 @@ export default class Vote extends MessageHandler {
     const counted = _.countBy(_.values(this.results));
 
     _.forEach(counted, (value, option) => {
-      result += `Option ${option}: ${value}\n`;
+      result += `Option ${option}: ${value} \n\n`;
     });
 
     return result;
@@ -113,6 +113,7 @@ export default class Vote extends MessageHandler {
       matches: new RegExp(`^(?:${Vote.prefix})(\\d)$`),
       onSelectAction: (session: Session, args: IActionRouteData) => {
         this.processChoise(session.message.user.name, args.intent.matched[1]);
+        session.endDialog();
       }
     })
   }
